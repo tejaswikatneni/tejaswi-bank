@@ -1,27 +1,22 @@
-class Api::V1::AccountsController < ActionController::Base
+class Api::V1::AccountsController < ApplicationController
   protect_from_forgery with: :null_session
-  before_action :set_account
+  before_action :fetch_account
 
   def account_summary
-    render json: { status: 'Success', account_summary: @account.as_json('summary') }
+    render json: { message: 'Success', account_summary: @account.as_json('summary') }, status: :ok
   end
 
   def transfer
     credit_account = Account.find(credit_account_params[:credit_account_id])
     transfer_amount = credit_account_params[:amount].to_f
-    error = @account.make_transfer(credit_account.account_number, transfer_amount)
-    if error.present?
-      render json: { message: error }
-    else
-      render json: { status: 'Success', balance: @account.balance }
-    end
+    response = @account.make_transfer(credit_account.account_number, transfer_amount)
+    render json: { message: response[:message], balance: @account.balance }, status: :ok
   end
 
   private
 
-  def set_account
-    user = User.find_by(id: params[:user_id])
-    @account = user.accounts.find_by(id: params[:account_id])
+  def fetch_account
+    @account = Account.find(params[:id])
   end
 
   def credit_account_params
