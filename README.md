@@ -9,6 +9,7 @@ rake db:seed
 rails s
 
 **To show the balance of account and last ten transactions**
+Headers: Content-Type: application/json
 
 HTTP Method: GET
 URL: http://localhost:3000/api/v1/accounts/20/account_summary
